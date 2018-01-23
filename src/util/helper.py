@@ -145,32 +145,32 @@ def httpRequest(url, as_file=False):
         response = urllib.urlopen(url)
     else:  # Hack to avoid Python gevent ssl errors
         pass
-        # import socket
-        # import httplib
-        # import ssl
-        #
-        # host, request = re.match("https://(.*?)(/.*?)$", url).groups()
-        #
-        # conn = httplib.HTTPSConnection(host)
-        # sock = socket.create_connection((conn.host, conn.port), conn.timeout, conn.source_address)
-        # conn.sock = ssl.wrap_socket(sock, conn.key_file, conn.cert_file)
-        # conn.request("GET", request)
-        # response = conn.getresponse()
-        # if response.status in [301, 302, 303, 307, 308]:
-        #     logging.info("Redirect to: %s" % response.getheader('Location'))
-        #     response = httpRequest(response.getheader('Location'))
+        import socket
+        import httplib
+        import ssl
 
-    # if as_file:
-    #     import cStringIO as StringIO
-    #     data = StringIO.StringIO()
-    #     while True:
-    #         buff = response.read(1024 * 16)
-    #         if not buff:
-    #             break
-    #         data.write(buff)
-    #     return data
-    # else:
-    #     return response
+        host, request = re.match("https://(.*?)(/.*?)$", url).groups()
+
+        conn = httplib.HTTPSConnection(host)
+        sock = socket.create_connection((conn.host, conn.port), conn.timeout, conn.source_address)
+        conn.sock = ssl.wrap_socket(sock, conn.key_file, conn.cert_file)
+        conn.request("GET", request)
+        response = conn.getresponse()
+        if response.status in [301, 302, 303, 307, 308]:
+            logging.info("Redirect to: %s" % response.getheader('Location'))
+            response = httpRequest(response.getheader('Location'))
+
+    if as_file:
+        import cStringIO as StringIO
+        data = StringIO.StringIO()
+        while True:
+            buff = response.read(1024 * 16)
+            if not buff:
+                break
+            data.write(buff)
+        return data
+    else:
+        return response
 
 
 def httpPost(url, port, params, header):

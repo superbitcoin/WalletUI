@@ -17,6 +17,7 @@ from Debug import Debug
 
 # Skip websocket handler if not necessary
 class UiWSGIHandler(WSGIHandler):
+
     def __init__(self, *args, **kwargs):
         self.server = args[2]
         super(UiWSGIHandler, self).__init__(*args, **kwargs)
@@ -51,6 +52,7 @@ class UiWSGIHandler(WSGIHandler):
 
 
 class UiServer:
+
     def __init__(self):
         self.ip = config.ui_ip
         self.port = config.ui_port
@@ -68,6 +70,7 @@ class UiServer:
 
         self.wrapper_nonces = []
         self.add_nonces = []
+        self.websockets = []
         self.site_manager = SiteManager.site_manager
         self.sites = SiteManager.site_manager.list()
         self.log = logging.getLogger(__name__)
@@ -80,8 +83,6 @@ class UiServer:
     # Handle WSGI request
     def handleRequest(self, env, start_response):
         path = env["PATH_INFO"]
-        # self.log.info("handleRequest path:" + path)
-        # self.log.info("handleRequest QUERY_STRING:" + str(env.get("QUERY_STRING")))
         if env.get("QUERY_STRING"):
             get = dict(cgi.parse_qsl(env['QUERY_STRING']))
         else:
@@ -93,7 +94,7 @@ class UiServer:
             try:
                 return ui_request.route(path)
             except Exception, err:
-                # logging.debug("UiRequest error: %s" % Debug.formatException(err))
+                logging.debug("UiRequest error: %s" % Debug.formatException(err))
                 return ui_request.error500("Err: %s" % Debug.formatException(err))
 
     # Reload the UiRequest class to prevent restarts in debug mode
@@ -109,6 +110,7 @@ class UiServer:
     # Bind and run the server
     def start(self):
         handler = self.handleRequest
+
         if config.debug:
             # Auto reload UiRequest on change
             from Debug import DebugReloader
@@ -119,23 +121,21 @@ class UiServer:
                 from werkzeug.debug import DebuggedApplication
                 handler = DebuggedApplication(self.handleRequest, evalex=True)
             except Exception, err:
-                # self.log.info("%s: For debugging please download Werkzeug (http://werkzeug.pocoo.org/)" % err)
+                self.log.info("%s: For debugging please download Werkzeug (http://werkzeug.pocoo.org/)" % err)
                 from Debug import DebugReloader
         self.log.write = lambda msg: self.log.debug(msg.strip())  # For Wsgi access.log
-        # self.log.info("--------------------------------------")
-        # self.log.info("Web interface: http://%s:%s/" % (config.ui_ip, config.ui_port))
-        # self.log.info("--------------------------------------")
+        self.log.info("--------------------------------------")
+        self.log.info("Web interface: http://%s:%s/" % (config.ui_ip, config.ui_port))
+        self.log.info("--------------------------------------")
 
-        # self.log.info("config.open_browser : " + str(config.open_browser))
         if config.open_browser:
-            # logging.info("Opening browser: %s...", config.open_browser)
+            logging.info("Opening browser: %s...", config.open_browser)
             import webbrowser
             if config.open_browser == "default_browser":
                 browser = webbrowser.get()
             else:
                 browser = webbrowser.get(config.open_browser)
-            url = "http://%s:%s/%s" % (
-                config.ui_ip if config.ui_ip != "*" else "127.0.0.1", config.ui_port, config.homepage)
+            url = "http://%s:%s/%s" % (config.ui_ip if config.ui_ip != "*" else "127.0.0.1", config.ui_port, config.homepage)
             gevent.spawn_later(0.3, browser.open, url, new=2)
 
         self.server = WSGIServer((self.ip, self.port), handler, handler_class=UiWSGIHandler, log=self.log)
@@ -150,6 +150,7 @@ class UiServer:
 
     def stop(self):
         self.log.debug("Stopping...")
+        self.actionWalletStop()
         # Close WS sockets
         if "clients" in dir(self.server):
             for client in self.server.clients.values():
@@ -170,4 +171,32 @@ class UiServer:
 
         self.server.socket.close()
         self.server.stop()
+
         time.sleep(1)
+
+    def updateWebsocket(self, **kwargs):
+        for ws in self.websockets:
+            ws.event("serverChanged", kwargs)
+
+    def actionWalletStop(self):
+        import urllib2
+        import json
+        import base64
+        data = None
+        print("------actoinWalletStop--------")
+        url = "http://127.0.0.1:18334"
+        postdata = dict(method='stop', id=1)
+        post = []
+        post.append(postdata)
+        req = urllib2.Request(url, json.dumps(post))
+        req.add_header('Content-Type', 'application/json;charset=utf-8')
+        auth = base64.b64encode('bitcoin:local321')
+        req.add_header("Authorization", 'Basic ' + auth)
+        try:
+            response = urllib2.urlopen(req)
+            data = json.loads(response.read())
+        except Exception, err:
+            print err.message
+
+        # print(data)
+        # return self.response(to, data)

@@ -170,22 +170,23 @@ class UiRequest(object):
         return self.user
 
     def getRequestUrl(self):
-        pass
-        # if self.isProxyRequest():
-        #     if self.env["PATH_INFO"].startswith("http://zero/"):
-        #         return self.env["PATH_INFO"]
-        #     else:  # Add http://zero to direct domain access
-        #         return self.env["PATH_INFO"].replace("http://", "http://zero/", 1)
-        # else:
-        #     return self.env["wsgi.url_scheme"] + "://" + self.env["HTTP_HOST"] + self.env["PATH_INFO"]
+        # pass
+        if self.isProxyRequest():
+            if self.env["PATH_INFO"].startswith("http://zero/"):
+                return self.env["PATH_INFO"]
+            else:  # Add http://zero to direct domain access
+                pass
+                # return self.env["PATH_INFO"].replace("http://", "http://zero/", 1)
+        else:
+            return self.env["wsgi.url_scheme"] + "://" + self.env["HTTP_HOST"] + self.env["PATH_INFO"]
 
     def getReferer(self):
-        pass
-        # referer = self.env.get("HTTP_REFERER")
+        # pass
+        referer = self.env.get("HTTP_REFERER")
         # if referer and self.isProxyRequest() and not referer.startswith("http://zero/"):
         #     return referer.replace("http://", "http://zero/", 1)
         # else:
-        #     return referer
+        return referer
 
     # Send response headers
     def sendHeader(self, status=200, content_type="text/html", noscript=False, extra_headers=[]):

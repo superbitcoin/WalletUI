@@ -1,21 +1,17 @@
-import urllib
 import zipfile
-import os
-import sys
-import ssl
-import httplib
-import socket
-import re
 import json
-import cStringIO as StringIO
+import os
+import re
+import zipfile
+
 
 def download():
     from src.util import helper
 
     urls = [
-        "https://github.com/Zzitao/wallet_explorer/archive/master.zip",
-        "https://gitlab.com/Zzitao/wallet_explorer/repository/archive.zip?ref=master",
-        "https://try.gogs.io/Zzitao/wallet_explorer/archive/master.zip"
+        "https://github.com/superbitcoin/WalletUI/archive/master.zip",
+        "https://github.com/superbitcoin/WalletUI/repository/archive.zip?ref=master",
+        "https://github.com/superbitcoin/WalletUI/archive/master.zip"
     ]
 
     zipdata = None
@@ -63,8 +59,8 @@ def update():
         print "Updating using site %s" % config.updatesite
         zipdata = False
         inner_paths = json.load(open(updatesite_path + "/content.json"))["files"].keys()
-        # Keep file only in ZeroNet directory
-        inner_paths = [inner_path for inner_path in inner_paths if inner_path.startswith("ZeroNet/")]
+        # Keep file only in wallet_explorer directory
+        inner_paths = [inner_path for inner_path in inner_paths if inner_path.startswith("wallet_exp/")]
     else:
         # Fallback to download
         zipdata = download()
@@ -87,7 +83,7 @@ def update():
             continue
         inner_path = inner_path.replace("\\", "/")  # Make sure we have unix path
         print ".",
-        dest_path = re.sub("^([^/]*-master.*?|ZeroNet)/", "", inner_path)  # Skip root zeronet-master-... like directories
+        dest_path = re.sub("^([^/]*-master.*?|wallet_exp)/", "", inner_path)  # Skip root wallet_explorer-master-... like directories
         dest_path = dest_path.lstrip("/")
         if not dest_path:
             continue
@@ -131,8 +127,6 @@ if __name__ == "__main__":
 
     from Config import config
     config.parse(silent=True)
-
-    from src.util import SslPatch
 
     try:
         update()
