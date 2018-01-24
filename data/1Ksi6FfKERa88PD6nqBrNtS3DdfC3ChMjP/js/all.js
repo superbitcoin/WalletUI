@@ -587,10 +587,13 @@ function sendToAddress() {
         };
 
         SbtcChat.prototype.updateWalletUi = function () {
-            // alert("正在更新，请稍后重启钱包");
+            alert("正在更新，请稍等");
+            CloseDiv("MyDiv10","fade");
             return this.cmd("updateWalletUi", [], (function (_this) {
                 return function (result) {
-                    alert("更新完成，请重启钱包");
+                    if(result){
+                        alert("更新完成，请重启钱包");
+                    }
                 };
             })(this));
         };
