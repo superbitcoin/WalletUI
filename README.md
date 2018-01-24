@@ -1,1 +1,2 @@
-# wallet_explorer
+# wallet_ui
+SuperBitcoin Wallet UI
