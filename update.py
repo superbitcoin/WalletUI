@@ -9,9 +9,9 @@ def download():
     from src.util import helper
 
     urls = [
-        "https://github.com/superbitcoin/WalletUI/archive/master.zip",
-        "https://github.com/superbitcoin/WalletUI/repository/archive.zip?ref=master",
-        "https://github.com/superbitcoin/WalletUI/archive/master.zip"
+        "https://github.com/superzitao/WalletUI/archive/master.zip",
+        "https://github.com/superzitao/WalletUI/repository/archive.zip?ref=master",
+        "https://github.com/superzitao/WalletUI/archive/master.zip"
     ]
 
     zipdata = None
