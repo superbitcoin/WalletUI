@@ -227,7 +227,7 @@ body,html {
 .layout-lastbg label {
 	height: 25px;
 	background: #7eff00;
-	width: 30%;
+	width: 0;
 	display: block;
 }
 .layout-last span {
@@ -697,4 +697,15 @@ input[type="radio"] + label {
 	float: left;
 	font-weight: bold;
 	margin-left:10px;
+}
+
+.button{
+	border: 1px solid #e97028;
+	border-radius: 4px;
+	padding: 4px 50px;
+	margin: 20px 20px 0 10px;
+	font-size: 14px;
+	color: #ffffff;
+	background-color: #e97028;
+	background-image: none;
 }

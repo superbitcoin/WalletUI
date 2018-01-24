@@ -45,6 +45,7 @@ def download():
 
 def update():
     from Config import config
+    import sys
     if getattr(sys, 'source_update_dir', False):
         if not os.path.isdir(sys.source_update_dir):
             os.makedirs(sys.source_update_dir)

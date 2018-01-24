@@ -20,6 +20,7 @@
             <li><a class="menu_a" href="javascript:Page.backupWallet()" data-locale="menu_wallet">钱包备份</a></li>
             <li><a class="menu_a" href="javascript:changePwd()" data-locale="menu_setpass">设置密码</a></li>
             <li><a class="menu_a" href="javascript:ShowDiv('MyDiv9','fade')" data-locale="menu_help">帮助</a></li>
+            <!--<li><a class="menu_a" href="javascript:Page.updateWalletUi()" data-locale="menu_help">帮助</a></li>-->
         </ul>
     </div>
 </div>
@@ -44,7 +45,7 @@
             <p style="margin-top:12px;"><label data-locale="pass_confim">确认密码:</label>
                 <input id="pwd_new_confirm" type="password" name="fname"/>
             </p>
-            <input type="button" onclick="" data-locale="right" value="确认"/>
+            <input type="button" onclick="Page.walletPassphraseChange()" data-locale="right" value="确认"/>
         </form>
     </div>
 </div>
@@ -92,7 +93,7 @@
             <p style="margin-top:12px;"><label data-locale="pass_confim">确认密码:</label>
                 <input id="pwd_confirm" type="password" name="fname"/>
             </p>
-            <input type="button" onclick="" data-locale="right" value="确认"/>
+            <input type="button" onclick="Page.encryptWallet()" data-locale="right" value="确认"/>
         </form>
     </div>
 </div>
@@ -109,12 +110,23 @@
 
 <div id="MyDiv9" class="white_content" style="height:200px;">
     <div class="layoutr-pstitle">
-        <span data-locale="man_address">智能合约</span>
+        <span data-locale="man_address">帮助</span>
         <div onclick="CloseDiv('MyDiv9','fade')" style="float:right;margin:10px;" class="close"> x</div>
     </div>
     <div style="text-align:center;margin-top:45px;">
         wallet version: 0.1beta<br><br>
         <a href="https://github.com/superbitcoin/Wallet" target="view_window">github</a>
+    </div>
+</div>
+
+<div id="MyDiv10" class="white_content" style="height:200px;">
+    <div class="layoutr-pstitle">
+        <span data-locale="man_address">更新</span>
+        <div onclick="CloseDiv('MyDiv10','fade')" style="float:right;margin:10px;" class="close"> x</div>
+    </div>
+    <div style="text-align:center;margin-top:45px;">
+        <div>有新版本，是否更新</div>
+        <input type="button" class="button" onclick="Page.updateWalletUi()" data-locale="right" value="确认"/>
     </div>
 </div>
 

@@ -169,7 +169,8 @@ function sendToAddress() {
         extend(SbtcChat, superClass);
 
         function SbtcChat() {
-            this.checkUpdate = bind(this.backupWallet, this);
+            this.updateWalletUi = bind(this.updateWalletUi, this);
+            this.checkUpdate = bind(this.checkUpdate, this);
             this.backupWallet = bind(this.backupWallet, this);
             this.walletPassphraseChange = bind(this.walletPassphraseChange, this);
             this.getBlockChainInfo = bind(this.getBlockChainInfo, this);
@@ -362,7 +363,7 @@ function sendToAddress() {
                     }
                     var list = result[0].result;
                     for (var j = 0; j < list.length; j++) {
-                        var type = list[j].amount > 0 ? "Receive" : "Pay";
+                        var type = list[j].amount > 0 ? "接收" : "发送";
                         $("#record_all").append("<tr>" + "<td>" + formatDate(new Date(list[j].time)) + "</td>" +
                             "<td>" + type + "</td>" +
                             " <td>" + list[j].address + "</td>" +
@@ -452,12 +453,29 @@ function sendToAddress() {
         };
         // walletpassphrase
         SbtcChat.prototype.encryptWallet = function () {
-            var password = document.getElementById("_fromAddress").value;
+            var password = document.getElementById("pwd").value;
+            var confirm = document.getElementById("pwd_confirm").value;
+            if (password === "") {
+                alert("请输入密码");
+                return;
+            }
+            if (confirm === "") {
+                alert("请输入确认密码");
+                return;
+            }
+            if (password !== confirm) {
+                alert("两次密码不一致");
+                return;
+            }
+            alert("正在设置密码，请勿刷新");
             this.cmd("walletEncryptWallet", [password], (function (_this) {
                 return function (result) {
+                    CloseDiv("MyDiv4", "fade");
                     if (result != null) {
                         alert("设置成功，请重启钱包");
                         // return document.getElementById("balance").innerHTML = JSON.stringify(result[0].result, null, 2) + "\n";
+                    } else {
+                        alert("设置密码失败，请稍后重试");
                     }
                 };
             })(this));
@@ -504,6 +522,7 @@ function sendToAddress() {
                 alert("两次密码不一致");
                 return;
             }
+            alert("正在设置密码，请稍等");
             this.cmd("walletPassphraseChange", [pwd_current, pwd_new], (function (_this) {
                 return function (data) {
                     CloseDiv('MyDiv0', 'fade');
@@ -512,7 +531,7 @@ function sendToAddress() {
                     } else {
                         alert("密码错误");
                     }
-                    document.getElementById("balance").innerHTML = JSON.stringify(data[0].result, null, 2) + "\n";
+                    // document.getElementById("balance").innerHTML = JSON.stringify(data[0].result, null, 2) + "\n";
                 };
             })(this));
         };
@@ -533,7 +552,7 @@ function sendToAddress() {
                     } else {
                         // _this.addLine("钱包信息: <pre>" + JSON.stringify(wallet_info, null, 2) + "</pre>");
                         walletInfo = wallet_info[0].result;
-                        if (wallet_info[0] !== null && wallet_info[0].result.unlocked_until !== null) {
+                        if (wallet_info[0] != null && wallet_info[0].result.unlocked_until != null) {
                             isWalletLocked = true;
                         } else {
                             // alert("钱包未加密，是否现在加密？");
@@ -548,9 +567,9 @@ function sendToAddress() {
             return this.cmd("walletGetBlockChainInfo", [], (function (_this) {
                 return function (_blockChainInfo) {
                     blockChainInfo = _blockChainInfo[0];
-                    document.getElementById("process").style.width = ((info.blocks / blockChainInfo.result.blocks ) * 100) + "%";
-                    var _leftTime = blockChainInfo.result.blocks - info.blocks;
-                    document.getElementById("leftTime").innerHTML = "Left：" + leftTime(_leftTime);
+                    document.getElementById("process").style.width = ((info.blocks / blockChainInfo.result.headers ) * 100) + "%";
+                    var _leftTime = blockChainInfo.result.headers - info.blocks;
+                    document.getElementById("leftTime").innerHTML = "Left：" + leftTime(_leftTime * 10);
                     Page.getBalance();
                 };
             })(this));
@@ -561,13 +580,14 @@ function sendToAddress() {
                 return function (result) {
                     console.info(result);
                     if (result) {
-                        alert("有新版本可以更新了");
+                        ShowDiv("MyDiv10", "fade");
                     }
                 };
             })(this));
         };
 
         SbtcChat.prototype.updateWalletUi = function () {
+            // alert("正在更新，请稍后重启钱包");
             return this.cmd("updateWalletUi", [], (function (_this) {
                 return function (result) {
                     alert("更新完成，请重启钱包");
