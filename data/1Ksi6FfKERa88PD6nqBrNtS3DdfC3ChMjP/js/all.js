@@ -467,10 +467,13 @@ function sendToAddress() {
                 alert("两次密码不一致");
                 return;
             }
-            alert("正在设置密码，请勿刷新");
+            document.getElementById("pwd_confirm").innerHTML = "";
+            document.getElementById("pwd").innerHTML = "";
             this.cmd("walletEncryptWallet", [password], (function (_this) {
+                alert("正在设置密码，请勿刷新");
                 return function (result) {
                     CloseDiv("MyDiv4", "fade");
+
                     if (result != null) {
                         alert("设置成功，请重启钱包");
                         // return document.getElementById("balance").innerHTML = JSON.stringify(result[0].result, null, 2) + "\n";
@@ -522,8 +525,11 @@ function sendToAddress() {
                 alert("两次密码不一致");
                 return;
             }
-            alert("正在设置密码，请稍等");
+            document.getElementById("pwd_current").innerHTML = "";
+            document.getElementById("pwd_new").innerHTML = "";
+            document.getElementById("pwd_new").innerHTML = "";
             this.cmd("walletPassphraseChange", [pwd_current, pwd_new], (function (_this) {
+                alert("正在设置密码，请稍等");
                 return function (data) {
                     CloseDiv('MyDiv0', 'fade');
                     if (data !== null && data[0].error === null) {
@@ -531,7 +537,6 @@ function sendToAddress() {
                     } else {
                         alert("密码错误");
                     }
-                    // document.getElementById("balance").innerHTML = JSON.stringify(data[0].result, null, 2) + "\n";
                 };
             })(this));
         };
@@ -588,10 +593,10 @@ function sendToAddress() {
 
         SbtcChat.prototype.updateWalletUi = function () {
             alert("正在更新，请稍等");
-            CloseDiv("MyDiv10","fade");
+            CloseDiv("MyDiv10", "fade");
             return this.cmd("updateWalletUi", [], (function (_this) {
                 return function (result) {
-                    if(result){
+                    if (result) {
                         alert("更新完成，请重启钱包");
                     }
                 };
