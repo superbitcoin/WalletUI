@@ -3,7 +3,7 @@ import json
 import os
 import re
 import zipfile
-
+import StringIO
 
 def download():
     from src.util import helper
